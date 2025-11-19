@@ -6,7 +6,7 @@
 /* ======================= Config DLL ======================= */
 static HMODULE g_hDll = NULL;
 
-/* ConvenÁ„o de chamada (Windows): __stdcall */
+/* Conven√ß√£o de chamada (Windows): __stdcall */
 #ifndef CALLCONV
 #  define CALLCONV WINAPI
 #endif
@@ -41,7 +41,7 @@ static ImprimeXMLSAT_t                ImprimeXMLSAT                = NULL;
 static ImprimeXMLCancelamentoSAT_t    ImprimeXMLCancelamentoSAT    = NULL;
 static InicializaImpressora_t         InicializaImpressora         = NULL;
 
-/* ======================= ConfiguraÁ„o ======================= */
+/* ======================= Configura√ß√£o ======================= */
 static int   g_tipo      = 1;
 static char  g_modelo[64] = "i9";
 static char  g_conexao[128] = "USB";
@@ -53,7 +53,7 @@ static int   g_conectada = 0;
     do {                                                                         \
         name = (name##_t)GetProcAddress((HMODULE)(h), #name);                    \
         if (!(name)) {                                                           \
-            fprintf(stderr, "Falha ao resolver sÌmbolo %s (erro=%lu)\n",         \
+            fprintf(stderr, "Falha ao resolver s√≠mbolo %s (erro=%lu)\n",         \
                     #name, GetLastError());                                      \
             return 0;                                                            \
         }                                                                        \
@@ -64,7 +64,7 @@ static void flush_entrada(void) {
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-/* ======================= FunÁıes para manipular a DLL ======================= */
+/* ======================= Fun√ß√µes para manipular a DLL ======================= */
 static int carregarFuncoes(void)
 {
     g_hDll = LoadLibraryA("E1_Impressora01.dll");
@@ -98,16 +98,16 @@ static void liberarBiblioteca(void)
     }
 }
 
-/* ======================= FunÁıes a serem implementadas pelos alunos ======================= */
+/* ======================= Fun√ß√µes a serem implementadas pelos alunos ======================= */
 
 static void exibirMenu(void)
 {
-    // TODO: implementar exibiÁ„o do menu principal com as opÁıes de impress„o
+    // TODO: implementar exibi√ß√£o do menu principal com as op√ß√µes de impress√£o
 }
 
 static void configurarConexao(void)
 {
-    // TODO: pedir ao usu·rio tipo, modelo, conex„o e par‚metro
+    // TODO: pedir ao usu√°rio tipo, modelo, conex√£o e par√¢metro
 }
 
 static void abrirConexao(void)
@@ -122,13 +122,13 @@ static void fecharConexao(void)
 
 static void imprimirTexto(void)
 {
-    // TODO: solicitar texto do usu·rio e chamar ImpressaoTexto
+    // TODO: solicitar texto do usu√°rio e chamar ImpressaoTexto
     // incluir AvancaPapel e Corte no final
 }
 
 static void imprimirQRCode(void)
 {
-    // TODO: solicitar conte˙do do QRCode e chamar ImpressaoQRCode(texto, 6, 4)
+    // TODO: solicitar conte√∫do do QRCode e chamar ImpressaoQRCode(texto, 6, 4)
     // incluir AvancaPapel e Corte no final
 }
 
@@ -161,7 +161,29 @@ static void imprimirXMLCancelamentoSAT(void)
 
 static void abrirGavetaElginOpc(void)
 {
-    // TODO: chamar AbreGavetaElgin(1, 50, 50)
+    int resultado;
+    
+    limparTela();
+    printf("========== ABRIR GAVETA ELGIN ==========\n\n");
+    
+    if (!g_conectada) {
+        printf("[ERRO] Impressora nao conectada!\n");
+        pausar();
+        return;
+    }
+    
+    printf("Abrindo gaveta Elgin...\n");
+    printf("Parametros: pino=1, tempoInicio=50ms, tempoFim=50ms\n\n");
+    
+    // Conforme especificado no template: pino=1, ti=50, tf=50
+    resultado = AbreGavetaElgin(1, 50, 50);
+    
+    if (resultado == 0) {
+        printf("[SUCESSO] Gaveta Elgin aberta!\n");
+    } else {
+        printf("[ERRO] Falha ao abrir gaveta. Codigo: %d\n", resultado);
+    }
+
 }
 
 static void abrirGavetaOpc(void)
@@ -174,7 +196,7 @@ static void emitirSinalSonoro(void)
     // TODO: chamar SinalSonoro(4, 50, 5)
 }
 
-/* ======================= FunÁ„o principal ======================= */
+/* ======================= Fun√ß√£o principal ======================= */
 int main(void)
 {
     if (!carregarFuncoes()) {
@@ -184,10 +206,9 @@ int main(void)
     int opcao = 0;
     while (1) {
         
-        //construir o menu e chamar as funÁoes aqui!!!
+        //construir o menu e chamar as fun√ßoes aqui!!!
         
                 
         
     }
 }
-
