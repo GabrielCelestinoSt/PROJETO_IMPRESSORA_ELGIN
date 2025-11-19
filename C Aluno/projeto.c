@@ -64,6 +64,13 @@ static void flush_entrada(void) {
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
+
+/* ======================= Funções para manipular CMD ======================= */
+
+static void limparTela(void) {
+    system("cls");
+}
+
 /* ======================= Funções para manipular a DLL ======================= */
 static int carregarFuncoes(void)
 {
