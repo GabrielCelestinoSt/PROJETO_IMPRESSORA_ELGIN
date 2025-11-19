@@ -6,7 +6,7 @@
 /* ======================= Config DLL ======================= */
 static HMODULE g_hDll = NULL;
 
-/* Convenção de chamada (Windows): __stdcall */
+/* ConvenÃ§Ã£o de chamada (Windows): __stdcall */
 #ifndef CALLCONV
 #  define CALLCONV WINAPI
 #endif
@@ -41,7 +41,7 @@ static ImprimeXMLSAT_t                ImprimeXMLSAT                = NULL;
 static ImprimeXMLCancelamentoSAT_t    ImprimeXMLCancelamentoSAT    = NULL;
 static InicializaImpressora_t         InicializaImpressora         = NULL;
 
-/* ======================= Configuração ======================= */
+/* ======================= ConfiguraÃ§Ã£o ======================= */
 static int   g_tipo      = 1;
 static char  g_modelo[64] = "i9";
 static char  g_conexao[128] = "USB";
@@ -53,7 +53,7 @@ static int   g_conectada = 0;
     do {                                                                         \
         name = (name##_t)GetProcAddress((HMODULE)(h), #name);                    \
         if (!(name)) {                                                           \
-            fprintf(stderr, "Falha ao resolver símbolo %s (erro=%lu)\n",         \
+            fprintf(stderr, "Falha ao resolver sÃ­mbolo %s (erro=%lu)\n",         \
                     #name, GetLastError());                                      \
             return 0;                                                            \
         }                                                                        \
@@ -64,7 +64,7 @@ static void flush_entrada(void) {
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-/* ======================= Funções para manipular a DLL ======================= */
+/* ======================= FunÃ§Ãµes para manipular a DLL ======================= */
 static int carregarFuncoes(void)
 {
     g_hDll = LoadLibraryA("E1_Impressora01.dll");
@@ -98,7 +98,7 @@ static void liberarBiblioteca(void)
     }
 }
 
-/* ======================= Funções a serem implementadas pelos alunos ======================= */
+/* ======================= FunÃ§Ãµes a serem implementadas pelos alunos ======================= */
 
 static int exibirMenu()
 {
@@ -123,7 +123,7 @@ static int exibirMenu()
 	
 
 	
-  // TODO: implementar exibição do menu principal com as opções de impressão  
+  // TODO: implementar exibiÃ§Ã£o do menu principal com as opÃ§Ãµes de impressÃ£o  
 }
 
 static void configurarConexao(void) {
@@ -132,7 +132,7 @@ static void configurarConexao(void) {
     const char *conexao;
     int parametro;
 
-    char PonteiroModelo[50];   // isso é porque o ponteiro nao é um espaço na memoria, mas sim um endereço, por isso criei essas variaveis temporárias
+    char PonteiroModelo[50];   // isso Ã© porque o ponteiro nao Ã© um espaÃ§o na memoria, mas sim um endereÃ§o, por isso criei essas variaveis temporÃ¡rias
     
     char PonteiroConexao[100]; 
 
@@ -173,8 +173,8 @@ static void configurarConexao(void) {
         
   do {
     printf("Digite o modelo: ");
-    scanf(" %[^\n]", PonteiroModelo); //esse [^\n] faz a variavel ler o nome completo se fosse so o %s iria ver só o primeiro valor antes do espaço
-    modelo = PonteiroModelo;// ai aqui eu estou fazendo o ponteiro q é um endereço nao um espaço na memoria virar um espaço na memoria. 
+    scanf(" %[^\n]", PonteiroModelo); //esse [^\n] faz a variavel ler o nome completo se fosse so o %s iria ver sÃ³ o primeiro valor antes do espaÃ§o
+    modelo = PonteiroModelo;// ai aqui eu estou fazendo o ponteiro q Ã© um endereÃ§o nao um espaÃ§o na memoria virar um espaÃ§o na memoria. 
 
     if (!verificarModelo(modelo)) {
         printf("Modelo invalido!Tente novamente.\n");
@@ -211,7 +211,7 @@ static void configurarConexao(void) {
 
     if (resp == 's' || resp == 'S') {
         printf("Digite o novo valor de conexao: ");
-        scanf(" %[^\n]", PonteiroConexao); // ai aqui eu estou fazendo o ponteiro q é um endereço nao um espaço na memoria virar um espaço na memoria. 
+        scanf(" %[^\n]", PonteiroConexao); // ai aqui eu estou fazendo o ponteiro q Ã© um endereÃ§o nao um espaÃ§o na memoria virar um espaÃ§o na memoria. 
         conexao = PonteiroConexao;
     }
 
@@ -246,7 +246,7 @@ static void configurarConexao(void) {
 
 int verificarModelo(char modelo[]) {
 
-    char *validas[] = {"i7","i7 Plus","i8","i9","ix","Fitpos","BK-T681","MP-4200 (Para modelos TH e ADV)","MP-4200 HS","MK","MP-2800"}; //um vetor onde cada posição guarda uma string diferente
+    char *validas[] = {"i7","i7 Plus","i8","i9","ix","Fitpos","BK-T681","MP-4200 (Para modelos TH e ADV)","MP-4200 HS","MK","MP-2800"}; //um vetor onde cada posiÃ§Ã£o guarda uma string diferente
 
     int qtd = sizeof(validas) / sizeof(validas[0]);
 
@@ -295,7 +295,7 @@ static void abrirConexao(void)
             printf("Conexao aberta com sucesso!\n");
             g_conectada = 1;
         } else {
-            printf("Ainda nao foi possível abrir a conexao. Codigo: %d\n", retorno);
+            printf("Ainda nao foi possÃ­vel abrir a conexao. Codigo: %d\n", retorno);
         }
 
     } else {
@@ -328,13 +328,35 @@ static void fecharConexao(void)
 
 static void imprimirTexto(void)
 {
-    // TODO: solicitar texto do usuário e chamar ImpressaoTexto
-    // incluir AvancaPapel e Corte no final
+  if (!g_conectada) {  //Verifica se a impressora est? conectada
+        printf("ERRO: Nao e possivel imprimir. A impressora nao esta conectada.\n");
+        return;
+    }
+
+    char texto[512];
+
+    printf("\nDigite o texto que deseja imprimir:\n> "); //L? o texto digitado pelo usu?rio
+    flush_entrada();
+    fgets(texto, sizeof(texto), stdin);
+
+    // Remove quebra de linha autom?tica
+    texto[strcspn(texto, "\n")] = '\0';
+
+    int ret = ImpressaoTexto(texto, 0, 0, 0); //Envia o texto diretamente para a impressora com ImpressaoTexto()
+    if (ret != 0) {
+        printf("Erro ao imprimir o texto! Codigo retornado: %d\n", ret);
+        return;
+    }
+
+    AvancaPapel(10);  // empurra o papel para frente
+    Corte(0);          // 0 = corte total
+
+    printf("\nTexto impresso com sucesso!\n");
 }
 
 static void imprimirQRCode(void)
 {
-    // TODO: solicitar conteúdo do QRCode e chamar ImpressaoQRCode(texto, 6, 4)
+    // TODO: solicitar conteÃºdo do QRCode e chamar ImpressaoQRCode(texto, 6, 4)
     // incluir AvancaPapel e Corte no final
 }
 
@@ -380,7 +402,7 @@ static void emitirSinalSonoro(void)
     // TODO: chamar SinalSonoro(4, 50, 5)
 }
 
-/* ======================= Função principal ======================= */
+/* ======================= FunÃ§Ã£o principal ======================= */
 int main(void)
 {
     if (!carregarFuncoes()) {
@@ -448,4 +470,5 @@ int main(void)
 
     return 0; 
 }
+
 
