@@ -244,21 +244,24 @@ static void imprimirTexto(void)
     limparTela();
     printf("========== IMPRESSAO DE TEXTO ==========\n\n");
     
+    // Primeiro ele checa se a impressora tá conectada.
+    // Se não tiver, já reclama e cai fora da função.
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
         return;
     }
-    
+    // Pede pro usuário digitar o texto que quer imprimir.
     printf("Digite o texto a ser impresso: ");
     fgets(texto, sizeof(texto), stdin);
-    texto[strcspn(texto, "\n")] = '\0';
+    texto[strcspn(texto, "\n")] = '\0'; // Remove o ENTER do final
     
     printf("\nImprimindo...\n");
     
-    // Imprime o texto (dados, posicao=1:centro, estilo=0:normal, tamanho=0:normal)
+   // Manda o texto pra impressora. aqui ele define:
+    // posicao = 1 (centralizado), estilo = 0 (normal), tamanho = 0 (normal)
     resultado = ImpressaoTexto(texto, 1, 0, 0);
-    
+    // Se deu tudo certo (resultado == 0), ele avança o papel e corta.
     if (resultado == 0) {
         // Avança papel e corta
         AvancaPapel(5);
@@ -721,3 +724,4 @@ int main(void)
     
     return 0;
 }
+
