@@ -59,12 +59,15 @@ static int   g_conectada = 0;
         }                                                                        \
     } while (0)
 
+// função de sistema que permite o usuário digitar na mesma linha que o código 
+// Lê o comando até encontrar uma quebra de linha('\n') ou o fim do arquivo ('End Of File (EOF)')
 static void flush_entrada(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-
+// função de sistema que limpa a tela
+// ela executa o comando 'system("cls")'
 static void limparTela(void) {
     system("cls");
 }
@@ -135,7 +138,6 @@ static void exibirMenu(void)
     printf("  9  - Abrir Gaveta (Elgin)\n");
     printf("  10 - Abrir Gaveta (Padrao)\n");
     printf("  11 - Emitir Sinal Sonoro\n");
-//    printf("  12 - Imprimir Cupom Demonstrativo\n");
     printf("  0  - Sair do Sistema\n");
     printf("\n");
     printf("========================================================\n");
@@ -478,11 +480,16 @@ static void imprimirXMLCancelamentoSAT(void)
 
 static void abrirGavetaElginOpc(void)
 {
+    // Criação da variável "resultado" para armazenar o retorno da DLL
     int resultado;
     
+    // Chama a função de limparTela
     limparTela();
     printf("========== ABRIR GAVETA ELGIN ==========\n\n");
     
+
+    // Teste condicional para verificar se a impressora está conectada
+    // "g_conectada" é uma flag global que mostra o status da conexão  
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -492,15 +499,17 @@ static void abrirGavetaElginOpc(void)
     printf("Abrindo gaveta Elgin...\n");
     printf("Parametros: pino=1, tempoInicio=50ms, tempoFim=50ms\n\n");
     
+    // parte que chama a função já criada na DLL 
     // Conforme especificado no template: pino=1, ti=50, tf=50
     resultado = AbreGavetaElgin(1, 50, 50);
-    
+
+
+    // Condicional para informar o usuário se a operação foi bem sucedida ou não
     if (resultado == 0) {
         printf("[SUCESSO] Gaveta Elgin aberta!\n");
     } else {
         printf("[ERRO] Falha ao abrir gaveta. Codigo: %d\n", resultado);
     }
-    
 
 }
 
@@ -558,62 +567,6 @@ static void emitirSinalSonoro(void)
 
 }
 
-static void imprimirCupomDemo(void)
-{
-    int resultado;
-    
-    limparTela();
-    printf("========== CUPOM DEMONSTRATIVO ==========\n\n");
-    
-    if (!g_conectada) {
-        printf("[ERRO] Impressora nao conectada!\n");
-
-        return;
-    }
-    
-    printf("Imprimindo cupom demonstrativo...\n\n");
-    
-    // Cabecalho
-    ImpressaoTexto("LOJA EXEMPLO LTDA", 1, 0, 1);
-    ImpressaoTexto("Rua das Flores, 123 - Centro", 1, 0, 0);
-    ImpressaoTexto("CNPJ: 00.000.000/0001-00", 1, 0, 0);
-    AvancaPapel(2);
-    
-    ImpressaoTexto("====== CUPOM FISCAL ======", 1, 0, 0);
-    AvancaPapel(2);
-    
-    // Itens
-    ImpressaoTexto("Item  Descricao      Qtd   Valor", 0, 0, 0);
-    ImpressaoTexto("1     Produto A      2     R$ 10,00", 0, 0, 0);
-    ImpressaoTexto("2     Produto B      1     R$ 25,50", 0, 0, 0);
-    ImpressaoTexto("3     Produto C      3     R$ 15,00", 0, 0, 0);
-    AvancaPapel(2);
-    
-    // Total
-    ImpressaoTexto("TOTAL:         R$ 50,50", 2, 0, 1);
-    AvancaPapel(2);
-    
-    // QR Code
-    ImpressaoTexto("Consulte pela chave:", 1, 0, 0);
-    ImpressaoQRCode("https://exemplo.com/nfce/12345", 6, 4);
-    AvancaPapel(2);
-    
-    // Codigo de barras
-    ImpressaoCodigoBarras(8, "{A012345678912", 80, 2, 3);
-    AvancaPapel(3);
-    
-    // Rodape
-    ImpressaoTexto("Obrigado pela preferencia!", 1, 0, 0);
-    ImpressaoTexto("Volte sempre!", 1, 0, 0);
-    AvancaPapel(4);
-    
-    // Corte e sinal sonoro
-    Corte(1);
-    SinalSonoro(2, 100, 200);
-    
-    printf("[SUCESSO] Cupom demonstrativo impresso!\n");
-
-}
 
 /* ======================= Função principal ======================= */
 int main(void)
@@ -692,10 +645,6 @@ int main(void)
                 emitirSinalSonoro();
                 break;
                 
-            case 12:
-                imprimirCupomDemo();
-                break;
-                
             case 0:
                 limparTela();
                 printf("\n");
@@ -724,4 +673,3 @@ int main(void)
     
     return 0;
 }
-
