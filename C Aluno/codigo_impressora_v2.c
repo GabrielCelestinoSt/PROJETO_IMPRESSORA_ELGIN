@@ -348,7 +348,7 @@ static void imprimirXMLSAT(void)
     
     limparTela();
     printf("========== IMPRESSAO XML SAT ==========\n\n");
-    
+    // Verifica se a impressora está conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -356,7 +356,7 @@ static void imprimirXMLSAT(void)
     }
     
     printf("Abrindo arquivo: ./XMLSAT.xml\n");
-    
+    // Abrir arquivo se 'XMLSAT.xml' for encontrado na pasta
     arquivo = fopen("./XMLSAT.xml", "rb");
     if (!arquivo) {
         printf("[ERRO] Arquivo XMLSAT.xml nao encontrado!\n");
@@ -370,7 +370,7 @@ static void imprimirXMLSAT(void)
     tamanho = ftell(arquivo);
     fseek(arquivo, 0, SEEK_SET);
     
-    // Aloca memoria e le o conteudo
+    // Aloca memoria
     conteudo = (char *)malloc(tamanho + 1);
     if (!conteudo) {
         printf("[ERRO] Falha ao alocar memoria!\n");
@@ -378,7 +378,7 @@ static void imprimirXMLSAT(void)
 
         return;
     }
-    
+    // lê o conteudo
     fread(conteudo, 1, tamanho, arquivo);
     conteudo[tamanho] = '\0';
     fclose(arquivo);
@@ -391,9 +391,9 @@ static void imprimirXMLSAT(void)
     
     free(conteudo);
     
-    if (resultado == 0) {
-        AvancaPapel(5);
-        Corte(1);
+    if (resultado == 0) { // Se 0 - Sucesso | Se !=0 - Falha
+        AvancaPapel(5); // Avança o papelzinho
+        Corte(1); // Corta o papelzinho
         printf("[SUCESSO] XML SAT impresso!\n");
     } else {
         printf("[ERRO] Falha na impressao. Codigo: %d\n", resultado);
@@ -422,7 +422,7 @@ static void imprimirXMLCancelamentoSAT(void)
     
     limparTela();
     printf("========== IMPRESSAO XML CANCELAMENTO SAT ==========\n\n");
-    
+    //Verificar se a impressora está conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -432,7 +432,7 @@ static void imprimirXMLCancelamentoSAT(void)
     printf("Abrindo arquivo: ./CANC_SAT.xml\n");
     
     arquivo = fopen("./CANC_SAT.xml", "rb");
-    if (!arquivo) {
+    if (!arquivo) { // Verificar se "CANC_SAT.xml" está na pasta
         printf("[ERRO] Arquivo CANC_SAT.xml nao encontrado!\n");
         printf("Certifique-se de que o arquivo existe no diretorio atual.\n");
 
@@ -444,7 +444,7 @@ static void imprimirXMLCancelamentoSAT(void)
     tamanho = ftell(arquivo);
     fseek(arquivo, 0, SEEK_SET);
     
-    // Aloca memoria e le o conteudo
+    // Aloca memoria
     conteudo = (char *)malloc(tamanho + 1);
     if (!conteudo) {
         printf("[ERRO] Falha ao alocar memoria!\n");
@@ -452,7 +452,7 @@ static void imprimirXMLCancelamentoSAT(void)
 
         return;
     }
-    
+    // lê o conteudo
     fread(conteudo, 1, tamanho, arquivo);
     conteudo[tamanho] = '\0';
     fclose(arquivo);
@@ -461,13 +461,13 @@ static void imprimirXMLCancelamentoSAT(void)
     printf("Imprimindo XML de Cancelamento...\n\n");
     
     // Imprime XML Cancelamento (conteudo, assinatura, param=0:padrao)
-    resultado = ImprimeXMLCancelamentoSAT(conteudo, assinatura, 0);
+    resultado = ImprimeXMLCancelamentoSAT(conteudo, assinatura, 0); // Imprime
     
     free(conteudo);
     
-    if (resultado == 0) {
-        AvancaPapel(5);
-        Corte(1);
+    if (resultado == 0) { // Se 0 - sucesso | se !0 - falha
+        AvancaPapel(5); // Avançar o papelzinho
+        Corte(1); // Corta o papelzinho
         printf("[SUCESSO] XML de Cancelamento impresso!\n");
     } else {
         printf("[ERRO] Falha na impressao. Codigo: %d\n", resultado);
@@ -519,7 +519,7 @@ static void abrirGavetaOpc(void)
     
     limparTela();
     printf("========== ABRIR GAVETA PADRAO ==========\n\n");
-    
+    // Verifica se a impressora está conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -530,11 +530,11 @@ static void abrirGavetaOpc(void)
     printf("Parametros: pino=1, tempoInicio=5ms, tempoFim=10ms\n\n");
     
     // Conforme especificado no template: pino=1, ti=5, tf=10
-    resultado = AbreGaveta(1, 5, 10);
+    resultado = AbreGaveta(1, 5, 10); //Abrindo gaveta com os parametros
     
-    if (resultado == 0) {
+    if (resultado == 0) { // resultado == 0 | abrir gaveta
         printf("[SUCESSO] Gaveta aberta!\n");
-    } else {
+    } else { // resultado != 0 | mostrar código de erro
         printf("[ERRO] Falha ao abrir gaveta. Codigo: %d\n", resultado);
     }
 
@@ -546,7 +546,7 @@ static void emitirSinalSonoro(void)
     
     limparTela();
     printf("========== SINAL SONORO ==========\n\n");
-    
+    // Verifica se a impressora está conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -557,11 +557,11 @@ static void emitirSinalSonoro(void)
     printf("Parametros: 4 beeps, 50ms ligado, 5ms intervalo\n\n");
     
     // Conforme especificado no template: qtd=4, tempoInicio=50, tempoFim=5
-    resultado = SinalSonoro(4, 50, 5);
+    resultado = SinalSonoro(4, 50, 5); // Emitir sinal sonoro (beep) a partir dos parametros 
     
-    if (resultado == 0) {
+    if (resultado == 0) { // Emitir sinal sonoro
         printf("[SUCESSO] Sinal sonoro emitido!\n");
-    } else {
+    } else { // resultado != | Mostrar código da falha
         printf("[ERRO] Falha ao emitir sinal. Codigo: %d\n", resultado);
     }
 
@@ -673,3 +673,4 @@ int main(void)
     
     return 0;
 }
+
