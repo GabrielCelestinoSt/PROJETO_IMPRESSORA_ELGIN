@@ -6,7 +6,7 @@
 /* ======================= Config DLL ======================= */
 static HMODULE g_hDll = NULL;
 
-/* ConvenÃ§Ã£o de chamada (Windows): __stdcall */
+/* Convenção de chamada (Windows): __stdcall */
 #ifndef CALLCONV
 #  define CALLCONV WINAPI
 #endif
@@ -41,7 +41,7 @@ static ImprimeXMLSAT_t                ImprimeXMLSAT                = NULL;
 static ImprimeXMLCancelamentoSAT_t    ImprimeXMLCancelamentoSAT    = NULL;
 static InicializaImpressora_t         InicializaImpressora         = NULL;
 
-/* ======================= ConfiguraÃ§Ã£o ======================= */
+/* ======================= Configuração ======================= */
 static int   g_tipo      = 1;
 static char  g_modelo[64] = "i9";
 static char  g_conexao[128] = "USB";
@@ -59,17 +59,20 @@ static int   g_conectada = 0;
         }                                                                        \
     } while (0)
 
+// função de sistema que permite o usuário digitar na mesma linha que o código 
+// Lê o comando até encontrar uma quebra de linha('\n') ou o fim do arquivo ('End Of File (EOF)')
 static void flush_entrada(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-
+// função de sistema que limpa a tela
+// ela executa o comando 'system("cls")'
 static void limparTela(void) {
     system("cls");
 }
 
-/* ======================= FunÃ§Ãµes para manipular a DLL ======================= */
+/* ======================= Funções para manipular a DLL ======================= */
 static int carregarFuncoes(void)
 {
     g_hDll = LoadLibraryA("E1_Impressora01.dll");
@@ -103,7 +106,7 @@ static void liberarBiblioteca(void)
     }
 }
 
-/* ======================= FunÃ§Ãµes implementadas ======================= */
+/* ======================= Funções implementadas ======================= */
 
 static void exibirCabecalho(void)
 {
@@ -135,54 +138,45 @@ static void exibirMenu(void)
     printf("  9  - Abrir Gaveta (Elgin)\n");
     printf("  10 - Abrir Gaveta (Padrao)\n");
     printf("  11 - Emitir Sinal Sonoro\n");
-
     printf("  0  - Sair do Sistema\n");
     printf("\n");
     printf("========================================================\n");
     printf("\nEscolha uma opcao: ");
 }
 
-
-// Função responsável por configurar a conexão com a impressora.
-// Aqui eu defino o tipo de conexão, modelo, parâmetros e faço validações.
 static void configurarConexao(void)
 {
-    char resp;                  // Variável para receber resposta 's' ou 'n'
-    char modelo_buf[50];        // Buffer não utilizado, mas deixei aqui caso eu precise guardar algo futuramente
-    char conexao_buf[100];      // Mesmo caso do modelo_buf
-
-    limparTela();               // Limpo a tela antes de mostrar o menu de configuração
+	int resp = 0;
+    limparTela();
     printf("========== CONFIGURACAO DE CONEXAO ==========\n\n");
+    
+    int valido = 0;
 
-    // Se já estiver conectada, não deixo alterar nada
-    if (g_conectada) {
-        printf("A impressora está conectada!\n");
-        printf("Para alterar a configuracao, feche a conexao primeiro.\n");
-        return;
+do {
+    printf("Tipo de conexao:\n");
+    printf("--------------------------------------------\n");
+    printf("| Valor | Referencia                        |\n");
+    printf("--------------------------------------------\n");
+    printf("| 1     | USB                               |\n");
+    printf("| 2     | RS232                             |\n");
+    printf("| 3     | TCP/IP                            |\n");
+    printf("| 4     | Bluetooth                         |\n");
+    printf("| 5     | Impressoras acopladas (Android)   |\n");
+    printf("--------------------------------------------\n");
+    printf("Escolha: ");
+
+    scanf("%d", &g_tipo);
+    flush_entrada(); //limpa o lixo que ficou preso no buffer de entrada
+
+    if (g_tipo < 1 || g_tipo > 5) {
+        printf("\n[ERRO] Tipo invalido! Digite novamente.\n\n");
+    } else {
+        valido = 1; // entrada correta
     }
 
-    // Escolha do tipo de comunicação
-    do {
-        printf("--------------------------------------------\n");
-        printf("| Valor | Referencia                        |\n");
-        printf("--------------------------------------------\n");
-        printf("| 1     | USB                               |\n");
-        printf("| 2     | RS232                             |\n");
-        printf("| 3     | TCP/IP                            |\n");
-        printf("| 4     | Bluetooth                          |\n");
-        printf("| 5     | Impressoras acopladas (Android)    |\n");
-        printf("--------------------------------------------\n");
-
-        printf("Digite o tipo de comunicacao: ");
-        scanf("%d", &g_tipo);   // Recebo o tipo escolhido e coloco na variável global g_tipo
-
-        // Se digitou errado, aviso
-        if (g_tipo < 1 || g_tipo > 5)
-            printf("\nTipo invalido! Digite novamente.\n");
-
-    } while (g_tipo < 1 || g_tipo > 5);   // Repito até digitar um valor válido
-
-    // Se o tipo NÃO for Android (tipo 5), preciso pedir o modelo da impressora
+} while (!valido);
+    
+        // Se o tipo NÃO for Android (tipo 5), preciso pedir o modelo da impressora
     if (g_tipo != 5) {
 
         int modeloValido = 0;   // Controle para validar o modelo digitado
@@ -206,9 +200,9 @@ static void configurarConexao(void)
             printf("-----------------------------------\n");
 
             printf("Digite o modelo exatamente como na tabela: ");
-            scanf(" %[^\n]", g_modelo);  // Leio inclusive nomes com espaço
+            scanf(" %[^\n]", g_modelo);  // Leio inclusive nomes com espaço LER A LINHA INTEIRA atreves da string de formato
 
-            // Aqui comparo com todos os modelos permitidos.
+            // Aqui comparo com todos os modelos permitidos. Duas strings caractere por caractere
             if (strcmp(g_modelo, "i7") == 0 ||
                 strcmp(g_modelo, "i7 Plus") == 0 ||
                 strcmp(g_modelo, "i8") == 0 ||
@@ -230,20 +224,30 @@ static void configurarConexao(void)
 
     } else {
         // Tipo 5 não usa modelo, então deixo vazio
-        strcpy(g_modelo, "");
+        strcpy(g_modelo, ""); // Aqui estar zerando a string, como pede no modelo 
+        
+        
     }
 
-    // Defino a conexão padrão conforme o tipo selecionado
-    switch (g_tipo) {
-        case 1: strcpy(g_conexao, "USB"); break;
-        case 2: strcpy(g_conexao, "COM2"); break;
-        case 3: strcpy(g_conexao, "192.168.0.20"); break;
-        case 4: strcpy(g_conexao, "AA:BB:CC:DD:EE:FF"); break;
-        case 5: strcpy(g_conexao, ""); break;
+// Defino a conexão padrão conforme o tipo selecionado
+    switch (g_tipo) { //strcpy(destino, origem) usada para copiar uma string de um local de memória para outro
+        case 1: 
+        strcpy(g_conexao, "USB"); 
+            break;
+        case 2: 
+            strcpy(g_conexao, "COM2");
+            break;
+        case 3: 
+            strcpy(g_conexao, "192.168.0.20"); 
+            break;
+        case 4: 
+            strcpy(g_conexao, "AA:BB:CC:DD:EE:FF"); 
+            break;
+        case 5: 
+            strcpy(g_conexao, "");
+            break;
     }
-
-    // Pergunto se deseja alterar a conexão padrão
-    if (g_tipo != 5) {
+     if (g_tipo != 5) {
         printf("\nConexao padrao: %s\n", g_conexao);
         printf("Deseja alterar? (s/n): ");
         scanf(" %c", &resp);
@@ -253,114 +257,88 @@ static void configurarConexao(void)
             scanf(" %[^\n]", g_conexao);
         }
     }
-
-    // Configuração de parâmetros específicos
-    if (g_tipo == 2) {
-        printf("\nDigite o baudrate: ");
+    
+     if (g_tipo == 2) {
+        printf("\nBaudrate (ex: 9100): ");
         scanf("%d", &g_parametro);
 
     } else if (g_tipo == 3) {
-        printf("\nDigite a porta TCP ***: ");
+        printf("\nDigite a porta TCP ****: ");
         scanf("%d", &g_parametro);
 
     } else {
         g_parametro = 0;   // Outros tipos não usam parâmetro numérico
     }
 
-    // Exibo o resumo completo da configuração
-    printf("\n\nResumo da configuracao:\n");
+    
+     printf("\n\nResumo da configuracao:\n");
     printf("--------------------------------------------\n");
     printf("Tipo: %d\n", g_tipo);
     printf("Modelo: %s\n", g_tipo == 5 ? "(vazio)" : g_modelo);
     printf("Conexao: %s\n", g_conexao[0] ? g_conexao : "(vazio)");
     printf("Parametro: %d\n", g_parametro);
     printf("--------------------------------------------\n");
+
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-// Função usada para abrir a conexão com a impressora utilizando as
-// configurações já definidas anteriormente.
 static void abrirConexao(void)
 {
-    limparTela();   // Limpo a tela antes de iniciar o processo
+    limparTela();
+    printf("========== ABRINDO CONEXAO ==========\n\n");
+    
+    if (g_conectada) { // verificando se tem alguma conexao ativa
+        printf("[AVISO] Ja existe uma conexao ativa!\n");
 
-    // Se já estiver conectada, não deixo abrir novamente
-    if (g_conectada) {
-        printf("A impressora ja esta conectada!\n");
         return;
     }
-
-    printf("\nAbrindo Conexao...\n");
-
-    // Chamo a função da DLL passando as variáveis globais
-    int retorno = AbreConexaoImpressora(g_tipo, g_modelo, g_conexao, g_parametro);
-
-    // Caso retorno seja 0 significa sucesso
-    if (retorno == 0) {
-        printf("Conexao aberta com sucesso!\n");
-        g_conectada = 1;
-        return;
-    }
-
-    // Qualquer valor diferente de 0 significa erro
-    printf("\nErro ao abrir conexao! Codigo: %d\n", retorno);
-    printf("Configuracao incorreta ou dispositivo nao encontrado.\n");
-
-    char opcao;
-    printf("Deseja configurar a conexao? (s/n): ");
-    scanf(" %c", &opcao);
-
-    // Se quiser configurar novamente
-    if (opcao == 's' || opcao == 'S') {
-
-        configurarConexao(); // Chamo a configuração
-
-        printf("\nTentando novamente abrir conexao...\n");
-
-        retorno = AbreConexaoImpressora(g_tipo, g_modelo, g_conexao, g_parametro);
-
-        if (retorno == 0) {
-            printf("Conexao aberta com sucesso!\n");
-            g_conectada = 1;
-        } else {
-            printf("Nao foi possível abrir a conexao. Codigo: %d\n", retorno);
-        }
-
+    
+    printf("Conectando na impressora...\n");
+    printf("  Tipo: %d\n", g_tipo);
+    printf("  Modelo: %s\n", g_modelo);
+    printf("  Conexao: %s\n", g_conexao);
+    printf("  Parametro: %d\n\n", g_parametro);
+    
+    flush_entrada();
+    int resultado = AbreConexaoImpressora(g_tipo, g_modelo, g_conexao, g_parametro); // Abrindo a conexão com os dados configurados
+    
+    if (resultado == 0) {
+        printf("[SUCESSO] Conexao estabelecida!\n");
+        g_conectada = 1; // Marcando que agora estou conectada
+        
+        // Inicializa a impressora
+        InicializaImpressora(); // Após conectar, inicializo a impressora
+        printf("[OK] Impressora inicializada.\n");
     } else {
-        printf("Conexao nao configurada. Retornando ao menu...\n");
+        printf("[ERRO] Falha ao conectar. Codigo: %d\n", resultado);
+        g_conectada = 0; //  Vai garantir que continua marcado como desconectado
     }
+
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Função responsável por fechar a conexão com a impressora
 static void fecharConexao(void)
 {
     limparTela();
+    printf("========== FECHANDO CONEXAO ==========\n\n");
+    
+    if (!g_conectada) {  // Verifico se existe alguma conexão ativa
+        printf("[AVISO] Nenhuma conexao ativa!\n");
 
-    // Se não estiver conectada, não tem o que fechar
-    if (!g_conectada) {
-        printf("Nenhuma conexao aberta para ser fechada.\n");
         return;
     }
-
-    printf("\nFechando conexao...\n");
-
-    int retorno = FechaConexaoImpressora();   // Chamo a função da DLL
-
-    if (retorno == 0) {
-        printf("Conexao fechada com sucesso!\n");
-        g_conectada = 0;   // Atualizo o status global
+    
+    printf("Encerrando conexao com a impressora...\n");
+    
+	// Chamo a função da DLL para fechar a conexão.
+    int resultado = FechaConexaoImpressora();
+    
+    if (resultado == 0) {
+        printf("[SUCESSO] Conexao encerrada!\n");
+        g_conectada = 0; // atualizo o status interno para "desconectada"
     } else {
-        printf("Falha ao fechar conexao. Codigo: %d\n", retorno);
+        printf("[ERRO] Falha ao fechar conexao. Codigo: %d\n", resultado);
     }
+
 }
-
-
 
 static void imprimirTexto(void)
 {
@@ -370,23 +348,26 @@ static void imprimirTexto(void)
     limparTela();
     printf("========== IMPRESSAO DE TEXTO ==========\n\n");
     
+    // Primeiro ele checa se a impressora tá conectada.
+    // Se não tiver, já reclama e cai fora da função.
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
         return;
     }
-    
+    // Pede pro usuário digitar o texto que quer imprimir.
     printf("Digite o texto a ser impresso: ");
     fgets(texto, sizeof(texto), stdin);
-    texto[strcspn(texto, "\n")] = '\0';
+    texto[strcspn(texto, "\n")] = '\0'; // Remove o ENTER do final
     
     printf("\nImprimindo...\n");
     
-    // Imprime o texto (dados, posicao=1:centro, estilo=0:normal, tamanho=0:normal)
+   // Manda o texto pra impressora. aqui ele define:
+    // posicao = 1 (centralizado), estilo = 0 (normal), tamanho = 0 (normal)
     resultado = ImpressaoTexto(texto, 1, 0, 0);
-    
+    // Se deu tudo certo (resultado == 0), ele avança o papel e corta.
     if (resultado == 0) {
-        // AvanÃ§a papel e corta
+        // Avança papel e corta
         AvancaPapel(5);
         Corte(1);
         printf("[SUCESSO] Texto impresso!\n");
@@ -601,11 +582,16 @@ static void imprimirXMLCancelamentoSAT(void)
 
 static void abrirGavetaElginOpc(void)
 {
+    // Criação da variável "resultado" para armazenar o retorno da DLL
     int resultado;
     
+    // Chama a função de limparTela
     limparTela();
     printf("========== ABRIR GAVETA ELGIN ==========\n\n");
     
+
+    // Teste condicional para verificar se a impressora está conectada
+    // "g_conectada" é uma flag global que mostra o status da conexão  
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -615,15 +601,17 @@ static void abrirGavetaElginOpc(void)
     printf("Abrindo gaveta Elgin...\n");
     printf("Parametros: pino=1, tempoInicio=50ms, tempoFim=50ms\n\n");
     
+    // parte que chama a função já criada na DLL 
     // Conforme especificado no template: pino=1, ti=50, tf=50
     resultado = AbreGavetaElgin(1, 50, 50);
-    
+
+
+    // Condicional para informar o usuário se a operação foi bem sucedida ou não
     if (resultado == 0) {
         printf("[SUCESSO] Gaveta Elgin aberta!\n");
     } else {
         printf("[ERRO] Falha ao abrir gaveta. Codigo: %d\n", resultado);
     }
-    
 
 }
 
@@ -681,64 +669,8 @@ static void emitirSinalSonoro(void)
 
 }
 
-static void imprimirCupomDemo(void)
-{
-    int resultado;
-    
-    limparTela();
-    printf("========== CUPOM DEMONSTRATIVO ==========\n\n");
-    
-    if (!g_conectada) {
-        printf("[ERRO] Impressora nao conectada!\n");
 
-        return;
-    }
-    
-    printf("Imprimindo cupom demonstrativo...\n\n");
-    
-    // Cabecalho
-    ImpressaoTexto("LOJA EXEMPLO LTDA", 1, 0, 1);
-    ImpressaoTexto("Rua das Flores, 123 - Centro", 1, 0, 0);
-    ImpressaoTexto("CNPJ: 00.000.000/0001-00", 1, 0, 0);
-    AvancaPapel(2);
-    
-    ImpressaoTexto("====== CUPOM FISCAL ======", 1, 0, 0);
-    AvancaPapel(2);
-    
-    // Itens
-    ImpressaoTexto("Item  Descricao      Qtd   Valor", 0, 0, 0);
-    ImpressaoTexto("1     Produto A      2     R$ 10,00", 0, 0, 0);
-    ImpressaoTexto("2     Produto B      1     R$ 25,50", 0, 0, 0);
-    ImpressaoTexto("3     Produto C      3     R$ 15,00", 0, 0, 0);
-    AvancaPapel(2);
-    
-    // Total
-    ImpressaoTexto("TOTAL:         R$ 50,50", 2, 0, 1);
-    AvancaPapel(2);
-    
-    // QR Code
-    ImpressaoTexto("Consulte pela chave:", 1, 0, 0);
-    ImpressaoQRCode("https://exemplo.com/nfce/12345", 6, 4);
-    AvancaPapel(2);
-    
-    // Codigo de barras
-    ImpressaoCodigoBarras(8, "{A012345678912", 80, 2, 3);
-    AvancaPapel(3);
-    
-    // Rodape
-    ImpressaoTexto("Obrigado pela preferencia!", 1, 0, 0);
-    ImpressaoTexto("Volte sempre!", 1, 0, 0);
-    AvancaPapel(4);
-    
-    // Corte e sinal sonoro
-    Corte(1);
-    SinalSonoro(2, 100, 200);
-    
-    printf("[SUCESSO] Cupom demonstrativo impresso!\n");
-
-}
-
-/* ======================= FunÃ§Ã£o principal ======================= */
+/* ======================= Função principal ======================= */
 int main(void)
 {
     int opcao = 0;
@@ -813,10 +745,6 @@ int main(void)
                 
             case 11:
                 emitirSinalSonoro();
-                break;
-                
-            case 12:
-                imprimirCupomDemo();
                 break;
                 
             case 0:
