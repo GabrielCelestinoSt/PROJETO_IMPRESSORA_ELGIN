@@ -154,15 +154,15 @@ static void configurarConexao(void)
     printf("  5 - Rede (IP)\n");
     printf("Escolha: ");
     scanf("%d", &g_tipo);
-    flush_entrada();
+    flush_entrada(); // Limpo o buffer para evitar problemas
     
-    printf("\nModelo da impressora (i7/i8/i9): ");
-    fgets(g_modelo, sizeof(g_modelo), stdin);
-    g_modelo[strcspn(g_modelo, "\n")] = '\0';
+    printf("\nModelo da impressora (i7/i8/i9): "); 
+    fgets(g_modelo, sizeof(g_modelo), stdin); // lendo a linha inteira; size é o tamanho máximo; origem é de onde vou ler
+    g_modelo[strcspn(g_modelo, "\n")] = '\0'; // remover o ENTER que o fgets deixa
     
     if (g_tipo == 1) {
-        strcpy(g_conexao, "USB");
-        g_parametro = 0;
+        strcpy(g_conexao, "USB"); 
+        g_parametro = 0; // não usa porta
     } else if (g_tipo == 5) {
         printf("\nEndereco IP da impressora: ");
         fgets(g_conexao, sizeof(g_conexao), stdin);
@@ -170,7 +170,7 @@ static void configurarConexao(void)
         
         printf("Porta TCP/IP (ex: 9100): ");
         scanf("%d", &g_parametro);
-        flush_entrada();
+        flush_entrada(); // Limpo para evitar sujeira no buffer
     }
     
     printf("\n[OK] Configuracao salva!\n");
@@ -186,6 +186,7 @@ static void abrirConexao(void)
     limparTela();
     printf("========== ABRINDO CONEXAO ==========\n\n");
     
+    // verificando se existe uma conexão ativa
     if (g_conectada) {
         printf("[AVISO] Ja existe uma conexao ativa!\n");
 
@@ -198,18 +199,18 @@ static void abrirConexao(void)
     printf("  Conexao: %s\n", g_conexao);
     printf("  Parametro: %d\n\n", g_parametro);
     
-    int resultado = AbreConexaoImpressora(g_tipo, g_modelo, g_conexao, g_parametro);
+    int resultado = AbreConexaoImpressora(g_tipo, g_modelo, g_conexao, g_parametro); //abrindo a conexao
     
     if (resultado == 0) {
         printf("[SUCESSO] Conexao estabelecida!\n");
-        g_conectada = 1;
+        g_conectada = 1; // falo que existe uma conexão ativa
         
         // Inicializa a impressora
         InicializaImpressora();
         printf("[OK] Impressora inicializada.\n");
     } else {
         printf("[ERRO] Falha ao conectar. Codigo: %d\n", resultado);
-        g_conectada = 0;
+        g_conectada = 0;// falo que não existe uma conexão ativa
     }
 
 }
@@ -219,7 +220,7 @@ static void fecharConexao(void)
     limparTela();
     printf("========== FECHANDO CONEXAO ==========\n\n");
     
-    if (!g_conectada) {
+    if (!g_conectada) { // verificando se existe uma conexao aberta
         printf("[AVISO] Nenhuma conexao ativa!\n");
 
         return;
@@ -227,15 +228,14 @@ static void fecharConexao(void)
     
     printf("Encerrando conexao com a impressora...\n");
     
-    int resultado = FechaConexaoImpressora();
+    int resultado = FechaConexaoImpressora(); //chamando a conexao da DLL para fechar
     
     if (resultado == 0) {
         printf("[SUCESSO] Conexao encerrada!\n");
-        g_conectada = 0;
+        g_conectada = 0; // Agora marco que não tenho mais conexão ativa
     } else {
         printf("[ERRO] Falha ao fechar conexao. Codigo: %d\n", resultado);
     }
-
 }
 
 static void imprimirTexto(void)
@@ -283,24 +283,23 @@ static void imprimirQRCode(void)
     limparTela();
     printf("========== IMPRESSAO DE QR CODE ==========\n\n");
     
-    if (!g_conectada) {
+    if (!g_conectada) {  // verificando se tem conexao...se não tiver conexão, nao continua
         printf("[ERRO] Impressora nao conectada!\n");
-
         return;
     }
     
     printf("Digite o conteudo do QR Code: ");
-    fgets(dados, sizeof(dados), stdin);
-    dados[strcspn(dados, "\n")] = '\0';
+    fgets(dados, sizeof(dados), stdin); // lendo tudo que o usuário digitar dentro do limite do array
+    dados[strcspn(dados, "\n")] = '\0'; // tirando o \n que o fgets coloca
     
     printf("\nImprimindo QR Code...\n");
     
-    // Parametros conforme solicitado: tamanho=6, nivelCorrecao=4
+    // chamando a função da DLL com tamanho=6 e nivelCorrecao=4
     resultado = ImpressaoQRCode(dados, 6, 4);
     
     if (resultado == 0) {
-        AvancaPapel(5);
-        Corte(1);
+        AvancaPapel(5);// avanço do papel
+        Corte(1); // corta após imprimir
         printf("[SUCESSO] QR Code impresso!\n");
     } else {
         printf("[ERRO] Falha na impressao. Codigo: %d\n", resultado);
@@ -315,7 +314,7 @@ static void imprimirCodigoBarras(void)
     limparTela();
     printf("========== IMPRESSAO DE CODIGO DE BARRAS ==========\n\n");
     
-    if (!g_conectada) {
+    if (!g_conectada) { //verificando a conexao 
         printf("[ERRO] Impressora nao conectada!\n");
 
         return;
@@ -325,13 +324,13 @@ static void imprimirCodigoBarras(void)
     printf("Codigo: {A012345678912\n");
     printf("Tipo: CODE128 (8)\n\n");
     
-    // Parametros conforme especificado no template
-    // tipo=8, codigo="{A012345678912", altura=100, largura=2, HRI=3
+   // chamando a função da DLL usando o tipo 8 (CODE128)
+    // altura=100, largura=2, e HRI=3 conforme o template
     resultado = ImpressaoCodigoBarras(8, "{A012345678912", 100, 2, 3);
     
     if (resultado == 0) {
-        AvancaPapel(5);
-        Corte(1);
+        AvancaPapel(5);// avanço do papel
+        Corte(1); // corta depois de imprimir
         printf("[SUCESSO] Codigo de barras impresso!\n");
     } else {
         printf("[ERRO] Falha na impressao. Codigo: %d\n", resultado);
@@ -673,4 +672,5 @@ int main(void)
     
     return 0;
 }
+
 
