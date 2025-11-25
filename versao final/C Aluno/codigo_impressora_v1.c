@@ -6,7 +6,7 @@
 /* ======================= Config DLL ======================= */
 static HMODULE g_hDll = NULL;
 
-/* ConvenÁ„o de chamada (Windows): __stdcall */
+/* Conven√ß√£o de chamada (Windows): __stdcall */
 #ifndef CALLCONV
 #  define CALLCONV WINAPI
 #endif
@@ -41,7 +41,7 @@ static ImprimeXMLSAT_t                ImprimeXMLSAT                = NULL;
 static ImprimeXMLCancelamentoSAT_t    ImprimeXMLCancelamentoSAT    = NULL;
 static InicializaImpressora_t         InicializaImpressora         = NULL;
 
-/* ======================= ConfiguraÁ„o ======================= */
+/* ======================= Configura√ß√£o ======================= */
 static int   g_tipo      = 1;
 static char  g_modelo[64] = "i9";
 static char  g_conexao[128] = "USB";
@@ -59,20 +59,20 @@ static int   g_conectada = 0;
         }                                                                        \
     } while (0)
 
-// funÁ„o de sistema que permite o usu·rio digitar na mesma linha que o cÛdigo 
-// LÍ o comando atÈ encontrar uma quebra de linha('\n') ou o fim do arquivo ('End Of File (EOF)')
+// fun√ß√£o de sistema que permite o usu√°rio digitar na mesma linha que o c√≥digo 
+// L√™ o comando at√© encontrar uma quebra de linha('\n') ou o fim do arquivo ('End Of File (EOF)')
 static void flush_entrada(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-// funÁ„o de sistema que limpa a tela
+// fun√ß√£o de sistema que limpa a tela
 // ela executa o comando 'system("cls")'
 static void limparTela(void) {
     system("cls");
 }
 
-/* ======================= FunÁıes para manipular a DLL ======================= */
+/* ======================= Fun√ß√µes para manipular a DLL ======================= */
 static int carregarFuncoes(void)
 {
     g_hDll = LoadLibraryA("E1_Impressora01.dll");
@@ -106,7 +106,7 @@ static void liberarBiblioteca(void)
     }
 }
 
-/* ======================= FunÁıes implementadas ======================= */
+/* ======================= Fun√ß√µes implementadas ======================= */
 
 static void exibirCabecalho(void)
 {
@@ -176,7 +176,7 @@ do {
 
 } while (!valido);
     
-        // Se o tipo N√O for Android (tipo 5), preciso pedir o modelo da impressora
+        // Se o tipo N√ÉO for Android (tipo 5), preciso pedir o modelo da impressora
     if (g_tipo != 5) {
 
         int modeloValido = 0;   // Controle para validar o modelo digitado
@@ -200,7 +200,7 @@ do {
             printf("-----------------------------------\n");
 
             printf("Digite o modelo exatamente como na tabela: ");
-            scanf(" %[^\n]", g_modelo);  // Leio inclusive nomes com espaÁo LER A LINHA INTEIRA atreves da string de formato
+            scanf(" %[^\n]", g_modelo);  // Leio inclusive nomes com espa√ßo LER A LINHA INTEIRA atreves da string de formato
 
             // Aqui comparo com todos os modelos permitidos. Duas strings caractere por caractere
             if (strcmp(g_modelo, "i7") == 0 ||
@@ -220,17 +220,17 @@ do {
                 printf("\nModelo invalido! Digite novamente.\n");
             }
 
-        } while (!modeloValido);  // SÛ saio quando digitar um modelo v·lido
+        } while (!modeloValido);  // S√≥ saio quando digitar um modelo v√°lido
 
     } else {
-        // Tipo 5 n„o usa modelo, ent„o deixo vazio
+        // Tipo 5 n√£o usa modelo, ent√£o deixo vazio
         strcpy(g_modelo, ""); // Aqui estar zerando a string, como pede no modelo 
         
         
     }
 
-// Defino a conex„o padr„o conforme o tipo selecionado
-    switch (g_tipo) { //strcpy(destino, origem) usada para copiar uma string de um local de memÛria para outro
+// Defino a conex√£o padr√£o conforme o tipo selecionado
+    switch (g_tipo) { //strcpy(destino, origem) usada para copiar uma string de um local de mem√≥ria para outro
         case 1: 
         strcpy(g_conexao, "USB"); 
             break;
@@ -267,7 +267,7 @@ do {
         scanf("%d", &g_parametro);
 
     } else {
-        g_parametro = 0;   // Outros tipos n„o usam par‚metro numÈrico
+        g_parametro = 0;   // Outros tipos n√£o usam par√¢metro num√©rico
     }
 
     
@@ -299,14 +299,14 @@ static void abrirConexao(void)
     printf("  Parametro: %d\n\n", g_parametro);
     
     flush_entrada();
-    int resultado = AbreConexaoImpressora(g_tipo, g_modelo, g_conexao, g_parametro); // Abrindo a conex„o com os dados configurados
+    int resultado = AbreConexaoImpressora(g_tipo, g_modelo, g_conexao, g_parametro); // Abrindo a conex√£o com os dados configurados
     
     if (resultado == 0) {
         printf("[SUCESSO] Conexao estabelecida!\n");
         g_conectada = 1; // Marcando que agora estou conectada
         
         // Inicializa a impressora
-        InicializaImpressora(); // ApÛs conectar, inicializo a impressora
+        InicializaImpressora(); // Ap√≥s conectar, inicializo a impressora
         printf("[OK] Impressora inicializada.\n");
     } else {
         printf("[ERRO] Falha ao conectar. Codigo: %d\n", resultado);
@@ -320,7 +320,7 @@ static void fecharConexao(void)
     limparTela();
     printf("========== FECHANDO CONEXAO ==========\n\n");
     
-    if (!g_conectada) {  // Verifico se existe alguma conex„o ativa
+    if (!g_conectada) {  // Verifico se existe alguma conex√£o ativa
         printf("[AVISO] Nenhuma conexao ativa!\n");
 
         return;
@@ -328,7 +328,7 @@ static void fecharConexao(void)
     
     printf("Encerrando conexao com a impressora...\n");
     
-	// Chamo a funÁ„o da DLL para fechar a conex„o.
+	// Chamo a fun√ß√£o da DLL para fechar a conex√£o.
     int resultado = FechaConexaoImpressora();
     
     if (resultado == 0) {
@@ -340,6 +340,7 @@ static void fecharConexao(void)
 
 }
 
+
 static void imprimirTexto(void)
 {
     char texto[500];
@@ -348,14 +349,14 @@ static void imprimirTexto(void)
     limparTela();
     printf("========== IMPRESSAO DE TEXTO ==========\n\n");
     
-    // Primeiro ele checa se a impressora t· conectada.
-    // Se n„o tiver, j· reclama e cai fora da funÁ„o.
+    // Primeiro ele checa se a impressora t√° conectada.
+    // Se n√£o tiver, j√° reclama e cai fora da fun√ß√£o.
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
         return;
     }
-    // Pede pro usu·rio digitar o texto que quer imprimir.
+    // Pede pro usu√°rio digitar o texto que quer imprimir.
     printf("Digite o texto a ser impresso: ");
     fgets(texto, sizeof(texto), stdin);
     texto[strcspn(texto, "\n")] = '\0'; // Remove o ENTER do final
@@ -365,9 +366,9 @@ static void imprimirTexto(void)
    // Manda o texto pra impressora. aqui ele define:
     // posicao = 1 (centralizado), estilo = 0 (normal), tamanho = 0 (normal)
     resultado = ImpressaoTexto(texto, 1, 0, 0);
-    // Se deu tudo certo (resultado == 0), ele avanÁa o papel e corta.
+    // Se deu tudo certo (resultado == 0), ele avan√ßa o papel e corta.
     if (resultado == 0) {
-        // AvanÁa papel e corta
+        // Avan√ßa papel e corta
         AvancaPapel(5);
         Corte(1);
         printf("[SUCESSO] Texto impresso!\n");
@@ -385,24 +386,23 @@ static void imprimirQRCode(void)
     limparTela();
     printf("========== IMPRESSAO DE QR CODE ==========\n\n");
     
-    if (!g_conectada) {
+    if (!g_conectada) {  // verificando se tem conexao...se n√£o tiver conex√£o, nao continua
         printf("[ERRO] Impressora nao conectada!\n");
-
         return;
     }
     
     printf("Digite o conteudo do QR Code: ");
-    fgets(dados, sizeof(dados), stdin);
-    dados[strcspn(dados, "\n")] = '\0';
+    fgets(dados, sizeof(dados), stdin); // lendo tudo que o usu√°rio digitar dentro do limite do array
+    dados[strcspn(dados, "\n")] = '\0'; // tirando o \n que o fgets coloca
     
     printf("\nImprimindo QR Code...\n");
     
-    // Parametros conforme solicitado: tamanho=6, nivelCorrecao=4
+    // chamando a fun√ß√£o da DLL com tamanho=6 e nivelCorrecao=4
     resultado = ImpressaoQRCode(dados, 6, 4);
     
     if (resultado == 0) {
-        AvancaPapel(5);
-        Corte(1);
+        AvancaPapel(5);// avan√ßo do papel
+        Corte(1); // corta ap√≥s imprimir
         printf("[SUCESSO] QR Code impresso!\n");
     } else {
         printf("[ERRO] Falha na impressao. Codigo: %d\n", resultado);
@@ -417,7 +417,7 @@ static void imprimirCodigoBarras(void)
     limparTela();
     printf("========== IMPRESSAO DE CODIGO DE BARRAS ==========\n\n");
     
-    if (!g_conectada) {
+    if (!g_conectada) { //verificando a conexao 
         printf("[ERRO] Impressora nao conectada!\n");
 
         return;
@@ -427,13 +427,13 @@ static void imprimirCodigoBarras(void)
     printf("Codigo: {A012345678912\n");
     printf("Tipo: CODE128 (8)\n\n");
     
-    // Parametros conforme especificado no template
-    // tipo=8, codigo="{A012345678912", altura=100, largura=2, HRI=3
+   // chamando a fun√ß√£o da DLL usando o tipo 8 (CODE128)
+    // altura=100, largura=2, e HRI=3 conforme o template
     resultado = ImpressaoCodigoBarras(8, "{A012345678912", 100, 2, 3);
     
     if (resultado == 0) {
-        AvancaPapel(5);
-        Corte(1);
+        AvancaPapel(5);// avan√ßo do papel
+        Corte(1); // corta depois de imprimir
         printf("[SUCESSO] Codigo de barras impresso!\n");
     } else {
         printf("[ERRO] Falha na impressao. Codigo: %d\n", resultado);
@@ -450,7 +450,7 @@ static void imprimirXMLSAT(void)
     
     limparTela();
     printf("========== IMPRESSAO XML SAT ==========\n\n");
-    // Verifica se a impressora est· conectada
+    // Verifica se a impressora est√° conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -480,7 +480,7 @@ static void imprimirXMLSAT(void)
 
         return;
     }
-    // lÍ o conteudo
+    // l√™ o conteudo
     fread(conteudo, 1, tamanho, arquivo);
     conteudo[tamanho] = '\0';
     fclose(arquivo);
@@ -494,7 +494,7 @@ static void imprimirXMLSAT(void)
     free(conteudo);
     
     if (resultado == 0) { // Se 0 - Sucesso | Se !=0 - Falha
-        AvancaPapel(5); // AvanÁa o papelzinho
+        AvancaPapel(5); // Avan√ßa o papelzinho
         Corte(1); // Corta o papelzinho
         printf("[SUCESSO] XML SAT impresso!\n");
     } else {
@@ -505,7 +505,6 @@ static void imprimirXMLSAT(void)
     }
 
 }
-
 
 static void imprimirXMLCancelamentoSAT(void)
 {
@@ -525,7 +524,7 @@ static void imprimirXMLCancelamentoSAT(void)
     
     limparTela();
     printf("========== IMPRESSAO XML CANCELAMENTO SAT ==========\n\n");
-    //Verificar se a impressora est· conectada
+    //Verificar se a impressora est√° conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -535,7 +534,7 @@ static void imprimirXMLCancelamentoSAT(void)
     printf("Abrindo arquivo: ./CANC_SAT.xml\n");
     
     arquivo = fopen("./CANC_SAT.xml", "rb");
-    if (!arquivo) { // Verificar se "CANC_SAT.xml" est· na pasta
+    if (!arquivo) { // Verificar se "CANC_SAT.xml" est√° na pasta
         printf("[ERRO] Arquivo CANC_SAT.xml nao encontrado!\n");
         printf("Certifique-se de que o arquivo existe no diretorio atual.\n");
 
@@ -555,7 +554,7 @@ static void imprimirXMLCancelamentoSAT(void)
 
         return;
     }
-    // lÍ o conteudo
+    // l√™ o conteudo
     fread(conteudo, 1, tamanho, arquivo);
     conteudo[tamanho] = '\0';
     fclose(arquivo);
@@ -569,7 +568,7 @@ static void imprimirXMLCancelamentoSAT(void)
     free(conteudo);
     
     if (resultado == 0) { // Se 0 - sucesso | se !0 - falha
-        AvancaPapel(5); // AvanÁar o papelzinho
+        AvancaPapel(5); // Avan√ßar o papelzinho
         Corte(1); // Corta o papelzinho
         printf("[SUCESSO] XML de Cancelamento impresso!\n");
     } else {
@@ -583,16 +582,16 @@ static void imprimirXMLCancelamentoSAT(void)
 
 static void abrirGavetaElginOpc(void)
 {
-    // CriaÁ„o da vari·vel "resultado" para armazenar o retorno da DLL
+    // Cria√ß√£o da vari√°vel "resultado" para armazenar o retorno da DLL
     int resultado;
     
-    // Chama a funÁ„o de limparTela
+    // Chama a fun√ß√£o de limparTela
     limparTela();
     printf("========== ABRIR GAVETA ELGIN ==========\n\n");
     
 
-    // Teste condicional para verificar se a impressora est· conectada
-    // "g_conectada" È uma flag global que mostra o status da conex„o  
+    // Teste condicional para verificar se a impressora est√° conectada
+    // "g_conectada" √© uma flag global que mostra o status da conex√£o  
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -602,12 +601,12 @@ static void abrirGavetaElginOpc(void)
     printf("Abrindo gaveta Elgin...\n");
     printf("Parametros: pino=1, tempoInicio=50ms, tempoFim=50ms\n\n");
     
-    // parte que chama a funÁ„o j· criada na DLL 
+    // parte que chama a fun√ß√£o j√° criada na DLL 
     // Conforme especificado no template: pino=1, ti=50, tf=50
     resultado = AbreGavetaElgin(1, 50, 50);
 
 
-    // Condicional para informar o usu·rio se a operaÁ„o foi bem sucedida ou n„o
+    // Condicional para informar o usu√°rio se a opera√ß√£o foi bem sucedida ou n√£o
     if (resultado == 0) {
         printf("[SUCESSO] Gaveta Elgin aberta!\n");
     } else {
@@ -622,7 +621,7 @@ static void abrirGavetaOpc(void)
     
     limparTela();
     printf("========== ABRIR GAVETA PADRAO ==========\n\n");
-    // Verifica se a impressora est· conectada
+    // Verifica se a impressora est√° conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -637,7 +636,7 @@ static void abrirGavetaOpc(void)
     
     if (resultado == 0) { // resultado == 0 | abrir gaveta
         printf("[SUCESSO] Gaveta aberta!\n");
-    } else { // resultado != 0 | mostrar cÛdigo de erro
+    } else { // resultado != 0 | mostrar c√≥digo de erro
         printf("[ERRO] Falha ao abrir gaveta. Codigo: %d\n", resultado);
     }
 
@@ -649,7 +648,7 @@ static void emitirSinalSonoro(void)
     
     limparTela();
     printf("========== SINAL SONORO ==========\n\n");
-    // Verifica se a impressora est· conectada
+    // Verifica se a impressora est√° conectada
     if (!g_conectada) {
         printf("[ERRO] Impressora nao conectada!\n");
 
@@ -664,15 +663,14 @@ static void emitirSinalSonoro(void)
     
     if (resultado == 0) { // Emitir sinal sonoro
         printf("[SUCESSO] Sinal sonoro emitido!\n");
-    } else { // resultado != | Mostrar cÛdigo da falha
+    } else { // resultado != | Mostrar c√≥digo da falha
         printf("[ERRO] Falha ao emitir sinal. Codigo: %d\n", resultado);
     }
 
 }
 
 
-
-/* ======================= FunÁ„o principal ======================= */
+/* ======================= Fun√ß√£o principal ======================= */
 int main(void)
 {
     int opcao = 0;
